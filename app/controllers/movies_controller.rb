@@ -11,9 +11,9 @@ class MoviesController < ApplicationController
   end
 
   def index
-    order_by = params[:order].intern
-    if [:title, :release_date].include? order_by
-      @movies = Movie.order(order_by => :asc)
+    order_by = params[:order]
+    if ['title', 'release_date'].include? order_by
+      @movies = Movie.order(order_by.intern => :asc)
       @hilite = order_by
     else
       @movies = Movie.all
