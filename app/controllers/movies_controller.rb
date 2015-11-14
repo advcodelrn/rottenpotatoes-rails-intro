@@ -11,9 +11,19 @@ class MoviesController < ApplicationController
   end
 
   def index
+    options = {}
+    [:ratings, :order].each do |key|
+      options[key] = session[key] if !params[key] && session[key]
+    end
+    unless options.empty?
+      options.update(params)
+      redirect_to movies_path(options)
+    end 
+    
     @all_ratings = Movie.get_all_ratings
     if params[:ratings]
       @checked_ratings = params[:ratings].keys
+      session[:ratings] = params[:ratings]
     else
       @checked_ratings = @all_ratings.dup
     end
@@ -21,6 +31,7 @@ class MoviesController < ApplicationController
     if ['title', 'release_date'].include? order_by
       @movies = Movie.where(rating: @checked_ratings).order(order_by.intern => :asc)
       @hilite = order_by
+      session[:order] = order_by
     else
       @movies = Movie.where(rating: @checked_ratings)
     end
