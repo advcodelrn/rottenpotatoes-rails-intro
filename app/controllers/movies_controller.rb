@@ -11,12 +11,18 @@ class MoviesController < ApplicationController
   end
 
   def index
+    @all_ratings = Movie.get_all_ratings
+    if params[:ratings]
+      @checked_ratings = params[:ratings].keys
+    else
+      @checked_ratings = @all_ratings.dup
+    end
     order_by = params[:order]
     if ['title', 'release_date'].include? order_by
-      @movies = Movie.order(order_by.intern => :asc)
+      @movies = Movie.where(rating: @checked_ratings).order(order_by.intern => :asc)
       @hilite = order_by
     else
-      @movies = Movie.all
+      @movies = Movie.where(rating: @checked_ratings)
     end
   end
 
